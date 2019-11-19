@@ -8,7 +8,7 @@ namespace Hearts.Core
     {
         public int Points { get; private set; }
 
-        public List<Trick> TricksWon { get; set; }
+        public List<Trick> TricksWon { get; set; } = new List<Trick>();
 
         public List<Card> Hand { get; private set; } = new List<Card>();
 

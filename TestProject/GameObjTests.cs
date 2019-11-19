@@ -59,7 +59,8 @@ namespace TestProject
             
         }
         
-        public void TurnOrderTest()
+        [Fact]
+        public void PlayTest()
         {
             var game = new Game();
             for ( int i = 0; i < 4; ++i )
@@ -72,28 +73,28 @@ namespace TestProject
                         moqP.Setup( p => p.ShouldLead() )
                             .Returns( false );
 
-                        moqP.Setup( p => p.GetPlayCard( new Trick() ) )
+                        moqP.Setup( p => p.GetPlayCard( It.IsAny<Trick>() ) )
                             .Returns( new Card( 3, Suit.Clubs ) );
                         break;
                     case 1:
                         moqP.Setup( p => p.ShouldLead() )
                             .Returns( true );
 
-                        moqP.Setup( p => p.GetPlayCard( new Trick() ) )
+                        moqP.Setup( p => p.GetPlayCard( It.IsAny<Trick>() ) )
                             .Returns( new Card( 2, Suit.Clubs ) );
                         break;
                     case 2:
                         moqP.Setup( p => p.ShouldLead() )
                             .Returns( false );
 
-                        moqP.Setup( p => p.GetPlayCard( new Trick() ) )
+                        moqP.Setup( p => p.GetPlayCard( It.IsAny<Trick>() ) )
                             .Returns( new Card( 5, Suit.Clubs ) );
                         break;
                     case 3:
                         moqP.Setup( p => p.ShouldLead() )
                             .Returns( false );
 
-                        moqP.Setup( p => p.GetPlayCard( new Trick() ) )
+                        moqP.Setup( p => p.GetPlayCard( It.IsAny<Trick>() ) )
                             .Returns( new Card( 10, Suit.Clubs ) );
                         break;
 
@@ -104,6 +105,11 @@ namespace TestProject
             }
 
             game.StartGame();
+            game.PlayRound();
+
+            Assert.Single( game.Players[3].TricksWon);
+            var trick = game.Players[3].TricksWon[0];
+            Assert.Equal( 4 , trick.Cards.Count);
         }
 
 

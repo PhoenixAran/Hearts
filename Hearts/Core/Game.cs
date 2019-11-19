@@ -19,7 +19,6 @@ namespace Hearts.Core
 
         int _leadPlayerIdx;
         Deck _deck = new Deck();
-        Trick _trick = new Trick();
         
         public void StartGame()
         {
