@@ -105,7 +105,7 @@ namespace TestProject
             }
 
             game.StartGame();
-            game.PlayRound();
+            game.PlayTrick();
 
             Assert.Single( game.Players[3].TricksWon);
             var trick = game.Players[3].TricksWon[0];

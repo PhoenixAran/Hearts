@@ -8,14 +8,17 @@ namespace Hearts.Core
 {
     public class Game
     {
+
+        const int HAND_SIZE = 13;
+
         /*
          *      0
          *  3       1
          *      2
          */
-
         public List<Player> Players { get; set; } = new List<Player>();
         public int TurnNumber { get; private set; } = 1;
+        public int RoundNumber { get; private set; } = 1;
 
         int _leadPlayerIdx;
         Deck _deck = new Deck();
@@ -24,19 +27,19 @@ namespace Hearts.Core
         {
             Debug.Assert( Players.Count == 4 );
 
-            const int HAND_SIZE = 13;
             _deck.Shuffle();
 
-            foreach( var player in Players )
+            for( var i = 0; i < Players.Count; ++i )
             {
-                player.ReceiveCards( _deck.Cards.Take( HAND_SIZE ) );
+                var player = Players[i];
+                player.ReceiveCards( _deck.Cards.GetRange(i * HAND_SIZE, HAND_SIZE));
             }
 
         }
 
         private void PassPhase()
         {
-            int mod = TurnNumber % 4;
+            int mod = RoundNumber % 4;
 
             switch ( mod )
             {
@@ -68,10 +71,22 @@ namespace Hearts.Core
             return Players.IndexOf( Players.First( p => p.ShouldLead() ) );
         }
 
-        public void PlayRound()
+        private void Reset()
         {
-            if ( TurnNumber == 1 )
+            foreach( var player in Players )
+            {
+                player.EmptyHandAndTricks();
+            }
+            TurnNumber = 1;
+        }
+
+        public void PlayTrick()
+        {
+            if ( RoundNumber == 1 )
+            {
+                PassPhase();
                 _leadPlayerIdx = FindLeadPlayer();
+            }
             
            
             var trick = new Trick();
@@ -85,9 +100,16 @@ namespace Hearts.Core
 
             _leadPlayerIdx = Players.IndexOf( trick.GetWinner() );
             var winner = Players[_leadPlayerIdx];
-            winner.TricksWon.Add( trick );        
+            winner.TricksWon.Add( trick );
         }
-        
 
+        public void PlayRound()
+        {
+            for( int i = 0; i < HAND_SIZE; i = i + 1 )
+            {
+                PlayTrick();
+            }
+            
+        }
     }
 }

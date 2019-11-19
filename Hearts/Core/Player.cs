@@ -34,6 +34,12 @@ namespace Hearts.Core
             return false;
         }
 
+        public void EmptyHandAndTricks()
+        {
+            Hand.Clear();
+            TricksWon.Clear();
+        }
+
         public abstract void PassCards( int roundNumber, Player otherPlayer );
 
         /// <summary>
