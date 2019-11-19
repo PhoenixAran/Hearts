@@ -8,18 +8,15 @@ namespace Hearts.Core
     {
         public int Points { get; private set; }
 
-        public List<Card> CardsWon { get; set; }
+        public List<Trick> TricksWon { get; set; }
 
         public List<Card> Hand { get; private set; } = new List<Card>();
 
-        public List<Card> TransferList { get; private set; } = new List<Card>();
-
-        public void ReceiveCards( List<Card> newCards )
+        public void ReceiveCards( IEnumerable<Card> newCards )
         {
-            for( int i = newCards.Count; i >= 0; --i )
+            foreach ( var card in newCards )
             {
-                Hand.Add( newCards[i] );
-                newCards.RemoveAt( i );
+                Hand.Add( card );
             }
         }
 
@@ -27,28 +24,24 @@ namespace Hearts.Core
         /// If this player has the two of clubs
         /// </summary>
         /// <returns></returns>
-        public bool ShouldLead( int numPlayers )
+        public virtual bool ShouldLead()
         {
-            if ( !(numPlayers == 3) || (numPlayers == 4) )
-            {
-                throw new ArgumentOutOfRangeException( "Only 3 or 4 players are supported" );
-            }
-
-            var leadSuit = numPlayers == 3 ? Suit.Diamonds : Suit.Clubs;
-
             foreach( var card in Hand)
             {
-                if ( numPlayers == 4 )
-                {
-                    if ( card.CardRank == 2 && card.Suit == leadSuit )
-                        return true;
-                }
+                if ( card.CardRank == 2 && card.Suit == Suit.Diamonds )
+                    return true;                
             }
             return false;
         }
 
-        public abstract List<Card> PassCards( int roundNumber, Player otherPlayer );
+        public abstract void PassCards( int roundNumber, Player otherPlayer );
 
-        public abstract Card GetPlayCard( List<Card> currentTrick );
+        /// <summary>
+        /// Do not add directly to trick.
+        /// Return card.
+        /// </summary>
+        /// <param name="currentTrick"></param>
+        /// <returns></returns>
+        public abstract Card GetPlayCard( Trick currentTrick );
     }
 }
