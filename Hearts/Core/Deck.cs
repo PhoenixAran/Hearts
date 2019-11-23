@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Hearts.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,9 +8,7 @@ namespace Hearts.Core
 {
     public class Deck
     {
-
         public List<Card> Cards { get; set; }
-
         public int Size => Cards.Count;
 
         private Suit[] _suits;
@@ -20,7 +19,7 @@ namespace Hearts.Core
 
         public Deck()
         {
-            Cards = new List<Card>();
+            Cards = ListPool<Card>.Obtain();
             _suits = new[] { Suit.Clubs, Suit.Diamonds, Suit.Hearts, Suit.Spades };
             _rng = new Random();
 

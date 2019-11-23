@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Hearts.Utils;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -8,7 +9,7 @@ namespace Hearts.Core
 {
     public class Game
     {
-
+        #region Declarations
         const int HAND_SIZE = 13;
 
         /*
@@ -16,13 +17,15 @@ namespace Hearts.Core
          *  3       1
          *      2
          */
-        public List<Player> Players { get; set; } = new List<Player>();
+        public List<Player> Players { get; set; } = ListPool<Player>.Obtain();
         public int TurnNumber { get; private set; } = 1;
         public int RoundNumber { get; private set; } = 1;
 
         int _leadPlayerIdx;
         Deck _deck = new Deck();
-        
+        #endregion
+
+        #region Public Methods
         public void StartGame()
         {
             Debug.Assert( Players.Count == 4 );
@@ -34,9 +37,43 @@ namespace Hearts.Core
                 var player = Players[i];
                 player.ReceiveCards( _deck.Cards.GetRange(i * HAND_SIZE, HAND_SIZE));
             }
-
         }
 
+        public void PlayTrick()
+        {
+            if ( RoundNumber == 1 )
+            {
+                PassPhase();
+                _leadPlayerIdx = FindLeadPlayer();
+            }
+
+
+            var trick = Pool<Trick>.Obtain();
+            var leadPlayer = Players[_leadPlayerIdx];
+
+            for ( int i = 0, idx = _leadPlayerIdx; i < 4; ++i, idx = ( idx + 1 ) % 4 )
+            {
+                var currentPlayer = Players[idx];
+                var playCard = currentPlayer.GetPlayCard( trick );
+                trick.AddCard( playCard, currentPlayer );
+            }
+
+            _leadPlayerIdx = Players.IndexOf( trick.GetWinner() );
+            var winner = Players[_leadPlayerIdx];
+            winner.TricksWon.Add( trick );
+        }
+
+        public void PlayRound()
+        {
+            for( int i = 0; i < HAND_SIZE; i = i + 1 )
+            {
+                PlayTrick();
+            }
+            
+        }
+        #endregion
+
+        #region Private Methods
         private void PassPhase()
         {
             int mod = RoundNumber % 4;
@@ -73,43 +110,18 @@ namespace Hearts.Core
 
         private void Reset()
         {
-            foreach( var player in Players )
+            foreach ( var player in Players )
             {
                 player.EmptyHandAndTricks();
             }
             TurnNumber = 1;
         }
 
-        public void PlayTrick()
+        private bool ValidPlayCard(Card card, List<Card> hand, Trick trick)
         {
-            if ( RoundNumber == 1 )
-            {
-                PassPhase();
-                _leadPlayerIdx = FindLeadPlayer();
-            }
 
-
-            var trick = Pool<Trick>.Obtain();
-            var leadPlayer = Players[_leadPlayerIdx];
-
-            for ( int i = 0, idx = _leadPlayerIdx; i < 4; ++i, idx = ( idx + 1 ) % 4 )
-            {
-                var currentPlayer = Players[idx];
-                trick.AddCard( currentPlayer.GetPlayCard( trick ), currentPlayer );
-            }
-
-            _leadPlayerIdx = Players.IndexOf( trick.GetWinner() );
-            var winner = Players[_leadPlayerIdx];
-            winner.TricksWon.Add( trick );
+            throw new NotImplementedException();
         }
-
-        public void PlayRound()
-        {
-            for( int i = 0; i < HAND_SIZE; i = i + 1 )
-            {
-                PlayTrick();
-            }
-            
-        }
+        #endregion
     }
 }

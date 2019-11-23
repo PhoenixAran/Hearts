@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Hearts.Utils;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -8,9 +9,9 @@ namespace Hearts.Core
     {
         public int Points { get; private set; }
 
-        public List<Trick> TricksWon { get; set; } = new List<Trick>();
+        public List<Trick> TricksWon { get; set; } = ListPool<Trick>.Obtain();
 
-        public List<Card> Hand { get; private set; } = new List<Card>();
+        public List<Card> Hand { get; private set; } = ListPool<Card>.Obtain();
 
         public void ReceiveCards( IEnumerable<Card> newCards )
         {
