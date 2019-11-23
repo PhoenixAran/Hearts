@@ -44,6 +44,16 @@ namespace Hearts.Core
             }
         }
 
+        public bool HasSuit( Suit suit )
+        {
+            foreach ( var card in Hand )
+            {
+                if ( card.Suit == suit )
+                    return true;
+            }
+            return false;
+        }
+
         public abstract void PassCards( int roundNumber, Player otherPlayer );
 
         /// <summary>
@@ -53,5 +63,7 @@ namespace Hearts.Core
         /// <param name="currentTrick"></param>
         /// <returns></returns>
         public abstract Card GetPlayCard( Trick currentTrick );
+
+
     }
 }

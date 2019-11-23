@@ -23,7 +23,10 @@ namespace Hearts.Core
 
         int _leadPlayerIdx;
         Deck _deck = new Deck();
+        public bool CanLeadWithHearts { get; set; } = true;
+
         #endregion
+
 
         #region Public Methods
         public void StartGame()
@@ -117,10 +120,38 @@ namespace Hearts.Core
             TurnNumber = 1;
         }
 
-        private bool ValidPlayCard(Card card, List<Card> hand, Trick trick)
+        private bool ValidPlayCard(Card card, Player player, Trick trick)
         {
 
-            throw new NotImplementedException();
+            if ( trick.Count == 0 )
+            {
+                if ( TurnNumber == 1 )
+                {
+                    return ( card.Suit == Suit.Clubs && card.CardRank == 2 );
+                }
+                else
+                {
+                    if ( card.Suit == Suit.Hearts || ( card.Suit == Suit.Spades && card.CardRank == 12 ) )
+                    {
+                        return CanLeadWithHearts;
+                    }
+                }
+            }
+
+            //If they match the suit its valid
+            if ( card.Suit == trick.LeadSuit )
+            {
+                return true;
+            }
+
+            //If they don't match the suit and their hand is not void of the suit, its a bad play
+            if ( player.HasSuit( trick.LeadSuit ))
+            {
+                return false;
+            }
+
+            return true;
+
         }
         #endregion
     }

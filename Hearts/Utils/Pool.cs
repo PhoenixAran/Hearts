@@ -18,7 +18,7 @@ namespace Hearts.Utils
             return new T();
         }
 
-        public static void Free(T element)
+        public static void Free( T element )
         {
             _pool.Enqueue( element );
             if (element is IPoolable poolableObj)
@@ -26,7 +26,5 @@ namespace Hearts.Utils
                 poolableObj.Reset();
             }
         }
-
-
     }
 }
