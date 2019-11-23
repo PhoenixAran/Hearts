@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Hearts.Core
 {
-    public class Trick
+    public class Trick : IPoolable
     {
         public Dictionary<Card, Player> Cards = new Dictionary<Card, Player>();
         Suit _leadSuit;
@@ -25,7 +25,11 @@ namespace Hearts.Core
         }
 
 
-        public void Reset() => Cards.Clear();
+        public void Reset()
+        {
+            Cards.Clear();
+            _leadSuit = default( Suit );
+        }
        
     }
 }

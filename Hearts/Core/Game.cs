@@ -87,9 +87,9 @@ namespace Hearts.Core
                 PassPhase();
                 _leadPlayerIdx = FindLeadPlayer();
             }
-            
-           
-            var trick = new Trick();
+
+
+            var trick = Pool<Trick>.Obtain();
             var leadPlayer = Players[_leadPlayerIdx];
 
             for ( int i = 0, idx = _leadPlayerIdx; i < 4; ++i, idx = ( idx + 1 ) % 4 )

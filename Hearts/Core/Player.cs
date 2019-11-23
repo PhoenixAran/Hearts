@@ -37,7 +37,10 @@ namespace Hearts.Core
         public void EmptyHandAndTricks()
         {
             Hand.Clear();
-            TricksWon.Clear();
+            foreach ( var trick in TricksWon)
+            {
+                Pool<Trick>.Free( trick );
+            }
         }
 
         public abstract void PassCards( int roundNumber, Player otherPlayer );
