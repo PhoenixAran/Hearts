@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Hearts.Core
 {
-    public class Game
+    public class HeartsGame
     {
         #region Declarations
         const int HAND_SIZE = 13;
@@ -29,6 +29,17 @@ namespace Hearts.Core
 
 
         #region Public Methods
+        public void Reset()
+        {
+            foreach ( var player in Players )
+            {
+                player.EmptyHandAndTricks();
+                player.CanLeadHearts = false;
+            }
+            TurnNumber = 1;
+            _deck.Shuffle();
+        }
+
         public void StartGame()
         {
             Debug.Assert( Players.Count == 4 );
@@ -38,7 +49,7 @@ namespace Hearts.Core
             for( var i = 0; i < Players.Count; ++i )
             {
                 var player = Players[i];
-                player.ReceiveCards( _deck.Cards.GetRange(i * HAND_SIZE, HAND_SIZE));
+                player.QueueRecieveCards( _deck.Cards.GetRange(i * HAND_SIZE, HAND_SIZE));
             }
         }
 
@@ -58,6 +69,12 @@ namespace Hearts.Core
             {
                 var currentPlayer = Players[idx];
                 var playCard = currentPlayer.GetPlayCard( trick );
+
+                if ( !this.ValidPlayCard( playCard, currentPlayer, trick ) )
+                {
+                    throw new ArgumentException( $"Invalid card: {playCard} \nplayed for the trick: {trick}" );
+                }
+
                 trick.AddCard( playCard, currentPlayer );
             }
 
@@ -104,20 +121,19 @@ namespace Hearts.Core
                     Players[3].PassCards( TurnNumber, Players[1] );
                     break;
             }
+
+            if ( mod != 0 )
+            {
+                foreach (var player in Players )
+                {
+                    player.AddQueuedCards();
+                }
+            }
         }
 
         private int FindLeadPlayer()
         {
             return Players.IndexOf( Players.First( p => p.ShouldLead() ) );
-        }
-
-        private void Reset()
-        {
-            foreach ( var player in Players )
-            {
-                player.EmptyHandAndTricks();
-            }
-            TurnNumber = 1;
         }
 
         private bool ValidPlayCard(Card card, Player player, Trick trick)
@@ -145,13 +161,22 @@ namespace Hearts.Core
             }
 
             //If they don't match the suit and their hand is not void of the suit, its a bad play
-            if ( player.HasSuit( trick.LeadSuit ))
+            if ( player.HasSuit( trick.LeadSuit ) )
             {
                 return false;
             }
 
             return true;
 
+        }
+
+        private void NotifyPlayersCanLeadHearts()
+        {
+            CanLeadWithHearts = true;
+            foreach ( var player in Players )
+            {
+                player.CanLeadHearts = true;
+            }
         }
         #endregion
     }

@@ -1,6 +1,7 @@
 ﻿using Hearts.Utils;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace Hearts.Core
@@ -9,17 +10,40 @@ namespace Hearts.Core
     {
         public int Points { get; private set; }
 
-        public List<Trick> TricksWon { get; set; } = ListPool<Trick>.Obtain();
+        public List<Trick> TricksWon { get; private set; } = ListPool<Trick>.Obtain();
 
-        public List<Card> Hand { get; private set; } = ListPool<Card>.Obtain();
+        public List<Card> Hand { get;  set; } = ListPool<Card>.Obtain();
 
-        public void ReceiveCards( IEnumerable<Card> newCards )
+        /// <summary>
+        /// Where to put cards that the player will recieve in the passing phase
+        /// This is done here so the hand is not polluted. Players cards cannot give away
+        /// cards that they will receive
+        /// </summary>
+        public List<Card> QueuedCards { get; private set; } = ListPool<Card>.Obtain();
+
+        /// <summary>
+        /// Queues cards for this player to recieve
+        /// </summary>
+        /// <param name="newCards">Cards to recieve</param>
+        public void QueueRecieveCards( List<Card> newCards )
         {
-            foreach ( var card in newCards )
-            {
-                Hand.Add( card );
-            }
+            Debug.Assert( newCards.Count == 3 );
+            QueuedCards.AddRange( newCards );
         }
+
+        /// <summary>
+        /// To be called after the passing phase
+        /// </summary>
+        public void AddQueuedCards()
+        {
+            Hand.AddRange( QueuedCards );
+            QueuedCards.Clear();
+        }
+
+        /// <summary>
+        /// This will be set by the game object
+        /// </summary>
+        public bool CanLeadHearts { get; set; }
 
         /// <summary>
         /// If this player has the two of clubs
@@ -58,10 +82,9 @@ namespace Hearts.Core
 
         /// <summary>
         /// Do not add directly to trick.
-        /// Return card.
+        /// Returns card that this AI will play
         /// </summary>
         /// <param name="currentTrick"></param>
-        /// <returns></returns>
         public abstract Card GetPlayCard( Trick currentTrick );
 
 

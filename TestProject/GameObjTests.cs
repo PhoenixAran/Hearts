@@ -12,7 +12,7 @@ namespace TestProject
         [Fact]
         public void GameInitializeTest()
         {
-            var game = new Game();
+            var game = new HeartsGame();
             for ( int i = 0; i < 4; ++i )
             {
                 
@@ -62,7 +62,7 @@ namespace TestProject
         [Fact]
         public void PlayTest()
         {
-            var game = new Game();
+            var game = new HeartsGame();
             for ( int i = 0; i < 4; ++i )
             {
 
@@ -112,6 +112,77 @@ namespace TestProject
             Assert.Equal( 4 , trick.Cards.Count);
         }
 
+        
+        [Fact]
+        public void FirstTrickTest()
+        {
+            var turnHistory = new List<int>();
+            var game = new HeartsGame();
+            List<Trick> player4Tricks = new List<Trick>();
 
+            var players = new List<Mock<Player>>();
+            var player1 = new Mock<Player>();
+            var player2 = new Mock<Player>();
+            var player3 = new Mock<Player>();
+            var player4 = new Mock<Player>();
+
+            players.Add( player1 );
+            players.Add( player2 );
+            players.Add( player3 );
+            players.Add( player4 );
+
+            game.Players.AddRange( players.Select( m => m.Object ) );
+;
+            for ( int i = 0; i < 4; ++i )
+            {
+                var player = players[i];
+                if ( i == 3 )
+                {
+                    player.Setup( p => p.ShouldLead() )
+                          .Returns( true );
+                }
+                else
+                {
+                    player.Setup( p => p.ShouldLead() )
+                            .Returns( false );
+                }
+            }
+            player4.Setup( p => p.GetPlayCard( It.IsAny<Trick>() ) )
+                   .Returns( new Card( 2, Suit.Clubs ) )
+                   .Callback( () =>
+                   {
+                       turnHistory.Add( 4 );
+                   });
+
+            player3.Setup( p => p.GetPlayCard( It.IsAny<Trick>() ) )
+                   .Returns( new Card( 3, Suit.Clubs ) )
+                   .Callback( () =>
+                   {
+                       turnHistory.Add( 3 );
+                   });
+
+            player2.Setup( p => p.GetPlayCard( It.IsAny<Trick>() ) )
+                   .Returns( new Card( 10, Suit.Clubs ) )
+                   .Callback( () =>
+                   {
+                       turnHistory.Add( 2 );
+                   });
+
+            player1.Setup( p => p.GetPlayCard( It.IsAny<Trick>() ) )
+                   .Returns( new Card( 14, Suit.Clubs ) )
+                   .Callback( () =>
+                   {
+                       turnHistory.Add( 1 );
+                   });
+
+            game.PlayTrick();
+
+            Assert.Equal( new List<int> { 4, 1, 2, 3 }, turnHistory );
+
+
+       
+        }
+
+        
     }
 }

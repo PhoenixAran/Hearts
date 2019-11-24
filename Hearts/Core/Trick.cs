@@ -42,7 +42,25 @@ namespace Hearts.Core
             LeadSuit = default( Suit );
         }
 
-        
-       
+        public override string ToString()
+        {
+            if ( OrderedCards.Count == 0 )
+            {
+                return "Empty Trick!";
+            }
+
+            string returnStr = "{\n";
+
+
+            foreach( var card in OrderedCards )
+            {
+                returnStr += "\n";
+                returnStr += card.ToString();
+                
+            }
+            returnStr += "\n}";
+            return returnStr;
+        }
+
     }
 }

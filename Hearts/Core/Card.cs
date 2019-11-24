@@ -49,5 +49,30 @@ namespace Hearts.Core
             return this.CardRank.CompareTo( other.CardRank );
         }
         #endregion
+
+        public override string ToString()
+        {
+            string cardRankString;
+            switch ( CardRank )
+            {
+                case 11:
+                    cardRankString = "Jack";
+                    break;
+                case 12:
+                    cardRankString = "Queen";
+                    break;
+                case 13:
+                    cardRankString = "King";
+                    break;
+                case 14:               
+                    cardRankString = "Ace";
+                    break;
+                default:
+                    cardRankString = $"{CardRank}";
+                    break;
+            }
+
+            return $"{cardRankString} of {Suit}";
+        }
     }
 }
