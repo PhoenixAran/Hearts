@@ -140,7 +140,7 @@ namespace Hearts.Core
         }
 
         /// <summary>
-        /// Finds the index of the player that should lead the initial bday bash 
+        /// Finds the index of the player that should lead the initial trick
         /// </summary>
         /// <returns>Index of lead player</returns>
         private int FindInitialLeadPlayerIndex()
