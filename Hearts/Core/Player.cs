@@ -10,9 +10,10 @@ namespace Hearts.Core
     {
         public int Points { get; private set; }
 
-        public List<Trick> TricksWon { get; private set; } = ListPool<Trick>.Obtain();
-
         public List<Card> Hand { get;  set; } = ListPool<Card>.Obtain();
+
+
+        public List<Trick> TricksWon = ListPool<Trick>.Obtain();
 
         /// <summary>
         /// Where to put cards that the player will recieve in the passing phase
@@ -20,6 +21,12 @@ namespace Hearts.Core
         /// cards that they will receive
         /// </summary>
         private List<Card> _queuedCards = ListPool<Card>.Obtain();
+
+
+        /// <summary>
+        /// Cards won from the tricks
+        /// </summary>
+        protected List<Card> _cardsWon = ListPool<Card>.Obtain();
 
         /// <summary>
         /// Queues cards for this player to recieve
@@ -62,6 +69,7 @@ namespace Hearts.Core
         public void EmptyHandAndTricks()
         {
             Hand.Clear();
+            _cardsWon.Clear();
             for ( int i = TricksWon.Count - 1; i >= 0; --i )
             {
                 var trick = TricksWon[i];
@@ -78,6 +86,13 @@ namespace Hearts.Core
                     return true;
             }
             return false;
+        }
+
+        public void WinTrick( Trick trick )
+        {
+            TricksWon.Add( trick );
+            _cardsWon.AddRange( trick.OrderedCards );
+            Points += trick.GetPenaltyPoints();
         }
 
         public abstract void PassCards( int roundNumber, Player otherPlayer );

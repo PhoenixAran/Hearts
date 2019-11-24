@@ -19,6 +19,7 @@ namespace Hearts.Core
                 return Cards.Count;
             }
         }
+
         public Suit LeadSuit;
 
         public void AddCard( Card card, Player player )
@@ -31,15 +32,44 @@ namespace Hearts.Core
 
         public Player GetWinner()
         {
-            return Cards.Where( kv => kv.Key.Suit == LeadSuit )
-                  .OrderByDescending( kv => kv.Key.CardRank )
-                  .First().Value;
+            var tempList = ListPool<Card>.Obtain();
+
+            foreach ( var card in OrderedCards )
+            {
+                if ( card.Suit == LeadSuit )
+                {
+                    tempList.Add( card );
+                }
+            }
+
+            tempList.Sort();
+            var winner = Cards[tempList[tempList.Count - 1]];
+            ListPool<Card>.Free( tempList );
+
+            return winner;
         }
 
         public void Reset()
         {
             Cards.Clear();
             LeadSuit = default( Suit );
+        }
+            
+        public int GetPenaltyPoints()
+        {
+            int points = 0;
+            foreach ( var card in OrderedCards )
+            {
+                if ( card.Suit == Suit.Hearts )
+                {
+                    ++points;
+                }
+                else if ( card.Suit == Suit.Spades && card.CardRank == 12 ) //Check if it's the queen of spades
+                {
+                    points += 13;
+                }
+            }
+            return points;
         }
 
         public override string ToString()

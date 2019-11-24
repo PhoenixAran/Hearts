@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 
 namespace Hearts.Core
 {
@@ -58,7 +56,7 @@ namespace Hearts.Core
             if ( RoundNumber == 1 )
             {
                 PassPhase();
-                _leadPlayerIdx = FindLeadPlayer();
+                _leadPlayerIdx = FindInitialLeadPlayerIndex();
             }
 
 
@@ -131,9 +129,23 @@ namespace Hearts.Core
             }
         }
 
-        private int FindLeadPlayer()
+        /// <summary>
+        /// Finds the index of the player that should lead the initial bday bash 
+        /// </summary>
+        /// <returns>Index of lead player</returns>
+        private int FindInitialLeadPlayerIndex()
         {
-            return Players.IndexOf( Players.First( p => p.ShouldLead() ) );
+            int idx = -1;
+            for ( int i = 0; i < Players.Count; ++i )
+            {
+                if ( Players[i].ShouldLead() )
+                {
+                    idx = i;
+                    break;
+                }
+            }
+            Debug.Assert( idx != -1 );
+            return idx;
         }
 
         private bool ValidPlayCard(Card card, Player player, Trick trick)
@@ -177,6 +189,21 @@ namespace Hearts.Core
             {
                 player.CanLeadHearts = true;
             }
+        }
+
+        private bool IsGameOver()
+        {
+            const int POINT_LIMIT = 100;
+
+            foreach ( var player in Players )
+            {
+                if (player.Points == POINT_LIMIT )
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
         #endregion
     }
