@@ -9,10 +9,7 @@ namespace Hearts.Core
     public abstract class Player
     {
         public int Points { get; private set; }
-
         public List<Card> Hand { get;  set; } = ListPool<Card>.Obtain();
-
-
         public List<Trick> TricksWon = ListPool<Trick>.Obtain();
 
         /// <summary>
@@ -21,7 +18,6 @@ namespace Hearts.Core
         /// cards that they will receive
         /// </summary>
         private List<Card> _queuedCards = ListPool<Card>.Obtain();
-
 
         /// <summary>
         /// Cards won from the tricks
@@ -55,7 +51,6 @@ namespace Hearts.Core
         /// <summary>
         /// If this player has the two of clubs
         /// </summary>
-        /// <returns></returns>
         public virtual bool ShouldLead()
         {
             foreach( var card in Hand)

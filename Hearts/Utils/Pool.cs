@@ -8,6 +8,18 @@ namespace Hearts.Utils
     {
         private static readonly Queue<T> _pool = new Queue<T>( 24 );
 
+        public static void WarmCache( int amount )
+        {
+            amount -= _pool.Count;
+            if ( amount > 0 )
+            {
+                for ( int i = 0; i < amount; ++i )
+                {
+                    _pool.Enqueue( new T() );
+                }
+            }
+        }
+
         public static T Obtain()
         {
             if ( _pool.Count > 0)

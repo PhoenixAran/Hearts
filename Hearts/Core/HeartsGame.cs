@@ -18,13 +18,10 @@ namespace Hearts.Core
         public List<Player> Players { get; set; } = ListPool<Player>.Obtain();
         public int TurnNumber { get; private set; } = 1;
         public int RoundNumber { get; private set; } = 1;
-
+        public bool CanLeadWithHearts { get; set; } = true;
         int _leadPlayerIdx;
         Deck _deck = new Deck();
-        public bool CanLeadWithHearts { get; set; } = true;
-
         #endregion
-
 
         #region Public Methods
         public void Reset()
@@ -59,7 +56,6 @@ namespace Hearts.Core
                 _leadPlayerIdx = FindInitialLeadPlayerIndex();
             }
 
-
             var trick = Pool<Trick>.Obtain();
             var leadPlayer = Players[_leadPlayerIdx];
 
@@ -88,6 +84,20 @@ namespace Hearts.Core
                 PlayTrick();
             }
             
+        }
+        public bool IsGameOver()
+        {
+            const int POINT_LIMIT = 100;
+
+            foreach ( var player in Players )
+            {
+                if ( player.Points == POINT_LIMIT )
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
         #endregion
 
@@ -191,20 +201,6 @@ namespace Hearts.Core
             }
         }
 
-        private bool IsGameOver()
-        {
-            const int POINT_LIMIT = 100;
-
-            foreach ( var player in Players )
-            {
-                if (player.Points == POINT_LIMIT )
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
         #endregion
     }
 }
