@@ -19,7 +19,7 @@ namespace Hearts.Core
         /// This is done here so the hand is not polluted. Players cards cannot give away
         /// cards that they will receive
         /// </summary>
-        public List<Card> QueuedCards { get; private set; } = ListPool<Card>.Obtain();
+        private List<Card> _queuedCards = ListPool<Card>.Obtain();
 
         /// <summary>
         /// Queues cards for this player to recieve
@@ -28,7 +28,7 @@ namespace Hearts.Core
         public void QueueRecieveCards( List<Card> newCards )
         {
             Debug.Assert( newCards.Count == 3 );
-            QueuedCards.AddRange( newCards );
+            _queuedCards.AddRange( newCards );
         }
 
         /// <summary>
@@ -36,8 +36,8 @@ namespace Hearts.Core
         /// </summary>
         public void AddQueuedCards()
         {
-            Hand.AddRange( QueuedCards );
-            QueuedCards.Clear();
+            Hand.AddRange( _queuedCards );
+            _queuedCards.Clear();
         }
 
         /// <summary>
@@ -62,8 +62,10 @@ namespace Hearts.Core
         public void EmptyHandAndTricks()
         {
             Hand.Clear();
-            foreach ( var trick in TricksWon)
+            for ( int i = TricksWon.Count - 1; i >= 0; --i )
             {
+                var trick = TricksWon[i];
+                TricksWon.RemoveAt( i );
                 Pool<Trick>.Free( trick );
             }
         }

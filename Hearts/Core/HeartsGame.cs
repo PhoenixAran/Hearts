@@ -49,7 +49,7 @@ namespace Hearts.Core
             for( var i = 0; i < Players.Count; ++i )
             {
                 var player = Players[i];
-                player.QueueRecieveCards( _deck.Cards.GetRange(i * HAND_SIZE, HAND_SIZE));
+                player.Hand.AddRange( _deck.Cards.GetRange(i * HAND_SIZE, HAND_SIZE));
             }
         }
 
