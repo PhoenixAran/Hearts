@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Hearts.Utils
 {
-    interface IPoolable
+    public interface IPoolable
     {
         void Reset();
     }
