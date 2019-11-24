@@ -57,6 +57,7 @@ namespace Hearts.Core
             
         public int GetPenaltyPoints()
         {
+            const int QUEEN_PENALTY_POINTS = 13;
             int points = 0;
             foreach ( var card in OrderedCards )
             {
@@ -64,9 +65,9 @@ namespace Hearts.Core
                 {
                     ++points;
                 }
-                else if ( card.Suit == Suit.Spades && card.CardRank == 12 ) //Check if it's the queen of spades
+                else if ( card.Suit == Suit.Spades && card.CardRank == Card.QUEEN ) //Check if it's the queen of spades
                 {
-                    points += 13;
+                    points += QUEEN_PENALTY_POINTS;
                 }
             }
             return points;
@@ -79,8 +80,7 @@ namespace Hearts.Core
                 return "Empty Trick!";
             }
 
-            string returnStr = "{\n";
-
+            string returnStr = "{";
 
             foreach( var card in OrderedCards )
             {
@@ -89,6 +89,7 @@ namespace Hearts.Core
                 
             }
             returnStr += "\n}";
+
             return returnStr;
         }
 

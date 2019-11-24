@@ -169,7 +169,7 @@ namespace Hearts.Core
                 }
                 else
                 {
-                    if ( card.Suit == Suit.Hearts || ( card.Suit == Suit.Spades && card.CardRank == 12 ) )
+                    if ( card.Suit == Suit.Hearts || ( card.Suit == Suit.Spades && card.CardRank == Card.QUEEN ) )
                     {
                         return CanLeadWithHearts;
                     }

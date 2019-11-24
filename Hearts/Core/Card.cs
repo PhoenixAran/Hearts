@@ -9,6 +9,11 @@ namespace Hearts.Core
         public const int MIN_CARD_RANK = 2;
         public const int MAX_CARD_RANK = 14; //Ace
 
+        public const int JOKER = 11;
+        public const int QUEEN = 12;
+        public const int KING = 13;
+        public const int ACE = 14;
+
         public int CardRank { get; }
         public Suit Suit { get; }
 
