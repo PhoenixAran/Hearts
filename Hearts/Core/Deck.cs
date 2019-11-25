@@ -22,7 +22,6 @@ namespace Hearts.Core
 
         public Deck()
         {
-            _cards = ListPool<Card>.Obtain();
             _suits = new[] { Suit.Clubs, Suit.Diamonds, Suit.Hearts, Suit.Spades };
             _rng = new Random();
 
@@ -57,8 +56,10 @@ namespace Hearts.Core
         public Card RemoveTopCard()
         {
             var card = _cards[_cards.Count - 1];
+
             _removedCards.Add( card );
             _cards.RemoveAt( _cards.Count - 1 );
+
             return card;
         }
 

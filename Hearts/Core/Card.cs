@@ -14,8 +14,8 @@ namespace Hearts.Core
         public const int KING = 13;
         public const int ACE = 14;
 
-        public int CardRank { get; }
-        public Suit Suit { get; }
+        public readonly int CardRank;
+        public readonly Suit Suit;
 
         public Card( int cardRank, Suit suit)
         {
@@ -26,6 +26,8 @@ namespace Hearts.Core
             CardRank = cardRank;
             Suit = suit;
         }
+
+        public Card( Suit suit, int cardRank ) : this( cardRank, suit ) { }
 
 
         public override bool Equals( object obj )

@@ -19,7 +19,7 @@ namespace Hearts.Core
         public List<Player> Players { get; set; } = ListPool<Player>.Obtain();
         public int TurnNumber { get; private set; } = 1;
         public int RoundNumber { get; private set; } = 1;
-        public bool CanLeadWithHearts { get; set; } = true;
+        public bool CanLeadWithHearts { get; set; } = false;
         int _leadPlayerIdx;
         Deck _deck = new Deck();
         #endregion
@@ -60,16 +60,18 @@ namespace Hearts.Core
             var trick = Pool<Trick>.Obtain();
             // how many players to get cards from
             int limit = 4;
-            if ( RoundNumber == 1 )
+            if ( TurnNumber == 1 )
             {
                 PassPhase();
                 _leadPlayerIdx = FindInitialLeadPlayerIndex();
                 var leadPlayer = Players[_leadPlayerIdx];
                 var card = leadPlayer.Hand.First( c => c.CardRank == 2 && c.Suit == Suit.Clubs );
+                leadPlayer.Hand.Remove( card );
                 _leadPlayerIdx = ( _leadPlayerIdx + 1 ) % 4;
-                trick.AddCard( card, leadPlayer );
                 limit = 3;
-
+                trick.AddCard( card, leadPlayer );
+                //change limit to 3 since we got the first card from the intial lead player already
+        
             }   
 
             for ( int i = 0, idx = _leadPlayerIdx; i < limit; ++i, idx = ( idx + 1 ) % 4 )
@@ -77,6 +79,8 @@ namespace Hearts.Core
                 var currentPlayer = Players[idx];
                 var playCard = currentPlayer.GetPlayCard( TurnNumber, trick );
                 currentPlayer.Hand.Remove( playCard );
+
+                //verify if this card is valid
                 if ( !this.ValidPlayCard( playCard, currentPlayer, trick ) )
                 {
                     throw new ArgumentException( $"Invalid card: {playCard} \nplayed for the trick: {trick}" );
@@ -85,7 +89,7 @@ namespace Hearts.Core
                 //Player has voided the suit and can therefore play Hearts
                 if ( !CanLeadWithHearts && playCard.Suit == Suit.Hearts )
                 {
-                    this.NotifyPlayersCanLeadHearts();
+                    this.NotifyPlayersCanLeadHearts(true);
                 }
 
                 trick.AddCard( playCard, currentPlayer );
@@ -93,7 +97,7 @@ namespace Hearts.Core
 
             _leadPlayerIdx = Players.IndexOf( trick.GetWinner() );
             var winner = Players[_leadPlayerIdx];
-            winner.TricksWon.Add( trick );
+            winner.WinTrick( trick );
             TurnNumber += 1;
         }
 
@@ -104,6 +108,7 @@ namespace Hearts.Core
                 DealToPlayers();
             }
 
+            NotifyPlayersNewRound();
             for( int i = 0; i < HAND_SIZE; ++i )
             {
                 PlayTrick();
@@ -111,6 +116,12 @@ namespace Hearts.Core
             
             //Get the cards back into the deck
             _deck.ResetDeck();
+            //reset the turn number
+            TurnNumber = 1;
+            //increment round number
+            RoundNumber++;
+            //reset CanLeadWithHearts flat
+            NotifyPlayersCanLeadHearts( true );
         }
 
 
@@ -222,15 +233,23 @@ namespace Hearts.Core
 
         }
 
-        private void NotifyPlayersCanLeadHearts()
+        private void NotifyPlayersCanLeadHearts(bool canLeadWithHearts)
         {
-            CanLeadWithHearts = true;
+            CanLeadWithHearts = canLeadWithHearts;
             foreach ( var player in Players )
             {
-                player.CanLeadHearts = true;
+                player.CanLeadHearts = canLeadWithHearts;
             }
         }
 
+
+        private void NotifyPlayersNewRound()
+        {
+            foreach ( var player in Players )
+            {
+                player.NotifyNewRound();
+            }
+        }
         #endregion
     }
 }

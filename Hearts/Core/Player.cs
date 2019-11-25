@@ -101,6 +101,11 @@ namespace Hearts.Core
         /// </summary>
         public abstract Card GetPlayCard( int trickNumber, Trick currentTrick );
 
+        public virtual void NotifyNewRound()
+        {
+
+        }
+
 
     }
 }
