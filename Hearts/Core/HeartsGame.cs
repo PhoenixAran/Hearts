@@ -63,7 +63,7 @@ namespace Hearts.Core
             {
                 var currentPlayer = Players[idx];
                 var playCard = currentPlayer.GetPlayCard( trick );
-
+                currentPlayer.Hand.Remove( playCard );
                 if ( !this.ValidPlayCard( playCard, currentPlayer, trick ) )
                 {
                     throw new ArgumentException( $"Invalid card: {playCard} \nplayed for the trick: {trick}" );
