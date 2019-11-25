@@ -134,7 +134,7 @@ namespace Hearts.Core
             {
                 foreach (var player in Players )
                 {
-                    player.AddQueuedCards();
+                    player.AddQueuedCardsToHand();
                 }
             }
         }

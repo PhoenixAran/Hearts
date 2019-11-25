@@ -37,7 +37,7 @@ namespace Hearts.Core
         /// <summary>
         /// To be called after the passing phase
         /// </summary>
-        public void AddQueuedCards()
+        public void AddQueuedCardsToHand()
         {
             Hand.AddRange( _queuedCards );
             _queuedCards.Clear();
