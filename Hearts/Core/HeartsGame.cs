@@ -201,7 +201,7 @@ namespace Hearts.Core
 
         private bool ValidPlayCard(Card card, Player player, Trick trick)
         {
-
+            //Dylan plz fix this :3
             if ( trick.Count == 0 )
             {
                 if ( TurnNumber == 1 )
@@ -215,6 +215,7 @@ namespace Hearts.Core
                         return CanLeadWithHearts;
                     }
                 }
+
             }
 
             //If they match the suit its valid
