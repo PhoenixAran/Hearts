@@ -52,6 +52,7 @@ namespace Hearts.Core
         public void Reset()
         {
             Cards.Clear();
+            OrderedCards.Clear();
             LeadSuit = default( Suit );
         }
             

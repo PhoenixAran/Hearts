@@ -55,7 +55,7 @@ namespace Hearts.Core
         {
             foreach( var card in Hand)
             {
-                if ( card.CardRank == 2 && card.Suit == Suit.Diamonds )
+                if ( card.CardRank == 2 && card.Suit == Suit.Clubs )
                     return true;                
             }
             return false;
@@ -94,10 +94,12 @@ namespace Hearts.Core
 
         /// <summary>
         /// Do not add directly to trick.
-        /// Returns card that this AI will play
+        /// Returns card that this AI will play. The card returned will automatically be
+        /// removed from your hand.
+        /// The two of clubs will be automatically played if you are the lead player, so no need to 
+        /// implement that into your logic.
         /// </summary>
-        /// <param name="currentTrick"></param>
-        public abstract Card GetPlayCard( Trick currentTrick );
+        public abstract Card GetPlayCard( int trickNumber, Trick currentTrick );
 
 
     }

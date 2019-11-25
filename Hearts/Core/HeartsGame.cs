@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace Hearts.Core
 {
@@ -35,38 +36,56 @@ namespace Hearts.Core
             _deck.Shuffle();
         }
 
-        public void StartGame()
+        /// <summary>
+        /// Will deal the deck out to the players
+        /// </summary>
+        public void DealToPlayers()
         {
             Debug.Assert( Players.Count == 4 );
 
             _deck.Shuffle();
-
             for( var i = 0; i < Players.Count; ++i )
             {
                 var player = Players[i];
-                player.Hand.AddRange( _deck.Cards.GetRange(i * HAND_SIZE, HAND_SIZE));
+                for ( int j = 0; j < HAND_SIZE; ++j )
+                {
+                    player.Hand.Add( _deck.RemoveTopCard() );
+                }
             }
         }
 
         public void PlayTrick()
         {
+
+            var trick = Pool<Trick>.Obtain();
+            // how many players to get cards from
+            int limit = 4;
             if ( RoundNumber == 1 )
             {
                 PassPhase();
                 _leadPlayerIdx = FindInitialLeadPlayerIndex();
-            }
+                var leadPlayer = Players[_leadPlayerIdx];
+                var card = leadPlayer.Hand.First( c => c.CardRank == 2 && c.Suit == Suit.Clubs );
+                _leadPlayerIdx = ( _leadPlayerIdx + 1 ) % 4;
+                trick.AddCard( card, leadPlayer );
+                limit = 3;
 
-            var trick = Pool<Trick>.Obtain();
-            var leadPlayer = Players[_leadPlayerIdx];
+            }   
 
-            for ( int i = 0, idx = _leadPlayerIdx; i < 4; ++i, idx = ( idx + 1 ) % 4 )
+            for ( int i = 0, idx = _leadPlayerIdx; i < limit; ++i, idx = ( idx + 1 ) % 4 )
             {
                 var currentPlayer = Players[idx];
-                var playCard = currentPlayer.GetPlayCard( trick );
+                var playCard = currentPlayer.GetPlayCard( TurnNumber, trick );
                 currentPlayer.Hand.Remove( playCard );
                 if ( !this.ValidPlayCard( playCard, currentPlayer, trick ) )
                 {
                     throw new ArgumentException( $"Invalid card: {playCard} \nplayed for the trick: {trick}" );
+                }
+
+                //Player has voided the suit and can therefore play Hearts
+                if ( !CanLeadWithHearts && playCard.Suit == Suit.Hearts )
+                {
+                    this.NotifyPlayersCanLeadHearts();
                 }
 
                 trick.AddCard( playCard, currentPlayer );
@@ -75,16 +94,27 @@ namespace Hearts.Core
             _leadPlayerIdx = Players.IndexOf( trick.GetWinner() );
             var winner = Players[_leadPlayerIdx];
             winner.TricksWon.Add( trick );
+            TurnNumber += 1;
         }
 
-        public void PlayRound()
+        public void PlayRound(bool handsDealt = false)
         {
-            for( int i = 0; i < HAND_SIZE; i = i + 1 )
+            if ( !handsDealt )
+            {
+                DealToPlayers();
+            }
+
+            for( int i = 0; i < HAND_SIZE; ++i )
             {
                 PlayTrick();
             }
             
+            //Get the cards back into the deck
+            _deck.ResetDeck();
         }
+
+
+
         public bool IsGameOver()
         {
             const int POINT_LIMIT = 100;

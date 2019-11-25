@@ -8,8 +8,11 @@ namespace Hearts.Core
 {
     public class Deck
     {
-        public List<Card> Cards { get; set; }
-        public int Size => Cards.Count;
+        public int Size => _cards.Count;
+
+        private List<Card> _removedCards = ListPool<Card>.Obtain();
+
+        private List<Card> _cards = ListPool<Card>.Obtain();
 
         private Suit[] _suits;
 
@@ -19,7 +22,7 @@ namespace Hearts.Core
 
         public Deck()
         {
-            Cards = ListPool<Card>.Obtain();
+            _cards = ListPool<Card>.Obtain();
             _suits = new[] { Suit.Clubs, Suit.Diamonds, Suit.Hearts, Suit.Spades };
             _rng = new Random();
 
@@ -27,24 +30,37 @@ namespace Hearts.Core
             {
                 for ( int j = 0; j < _suits.Length; ++j )
                 {
-                    Cards.Add( new Card( i, _suits[j] ) );
+                    _cards.Add( new Card( i, _suits[j] ) );
                 }
             }
         }
 
         public void Shuffle ()
         {
-            int index = Cards.Count;
+            int index = _cards.Count;
             while ( index > 0 )
             {
                 --index;
                 int j = _rng.Next( index + 1 );
-                var card = Cards[j];
-                Cards[j] = Cards[index];
-                Cards[index] = card;
+                var card = _cards[j];
+                _cards[j] = _cards[index];
+                _cards[index] = card;
             }
         }
 
+        public void ResetDeck()
+        {
+            _cards.AddRange( _removedCards );
+            _removedCards.Clear();
+        }
+
+        public Card RemoveTopCard()
+        {
+            var card = _cards[_cards.Count - 1];
+            _removedCards.Add( card );
+            _cards.RemoveAt( _cards.Count - 1 );
+            return card;
+        }
 
     }
 }
