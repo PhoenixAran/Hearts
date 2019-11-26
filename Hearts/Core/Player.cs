@@ -61,7 +61,7 @@ namespace Hearts.Core
             return false;
         }
 
-        public void EmptyHandAndTricks()
+        public void Reset()
         {
             Hand.Clear();
             _cardsWon.Clear();
@@ -71,6 +71,8 @@ namespace Hearts.Core
                 TricksWon.RemoveAt( i );
                 Pool<Trick>.Free( trick );
             }
+            CanLeadHearts = false;
+            Points = 0;
         }
 
         public bool HasSuit( Suit suit )
@@ -116,6 +118,23 @@ namespace Hearts.Core
         public void OtherPlayerShootTheMoon()
         {
             Points += 26;
+        }
+
+        public bool HandIsAllHeartsAndQueenOfSpades()
+        {
+            foreach ( var card in Hand )
+            {
+                if ( card.Suit != Suit.Hearts )
+                {
+                    if ( card.CardRank == Card.QUEEN && card.Suit == Suit.Spades)
+                    {
+                        continue;
+                    }
+                    return false;
+                }
+                    
+            }
+            return true;
         }
     }
 }

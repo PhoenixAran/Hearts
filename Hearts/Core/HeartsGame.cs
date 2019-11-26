@@ -29,8 +29,7 @@ namespace Hearts.Core
         {
             foreach ( var player in Players )
             {
-                player.EmptyHandAndTricks();
-                player.CanLeadHearts = false;
+                player.Reset();
             }
             TurnNumber = 1;
             _deck.Shuffle();
@@ -82,7 +81,7 @@ namespace Hearts.Core
                 int numBadPlays = 0;
                 while (!this.ValidPlayCard(playCard, currentPlayer, trick))
                 {
-                    if(numBadPlays == 10)
+                    if(numBadPlays++ == 100)
                     {
                         throw new ArgumentException($"Invalid card: {playCard} \nplayed for the trick: {trick}\nMultiple attempts were made to play a card but none succeeded ");
                     }
@@ -230,7 +229,7 @@ namespace Hearts.Core
             {
                 if ( card.Suit == Suit.Hearts || ( card.Suit == Suit.Spades && card.CardRank == Card.QUEEN ) )
                 {
-                    return CanLeadWithHearts;
+                    return CanLeadWithHearts || player.HandIsAllHeartsAndQueenOfSpades();
                 }
                 return true;
             }
