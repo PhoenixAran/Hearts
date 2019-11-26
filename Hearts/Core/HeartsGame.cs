@@ -272,12 +272,14 @@ namespace Hearts.Core
         private bool HasNoValidFirstTurnPlay(List<Card> hand){
             bool condition = true;
 
-            hand.ForEach(x => {
-                if(x.Suit == Suit.Clubs || x.Suit == Suit.Diamonds || 
-                   (x.Suit == Suit.Spades && x.CardRank != Card.QUEEN)){
+            foreach (var card in hand)
+            {
+                if (card.Suit == Suit.Clubs || card.Suit == Suit.Diamonds ||
+                   (card.Suit == Suit.Spades && card.CardRank != Card.QUEEN))
+                {
                     condition = false;
                 }
-            });
+            }
 
             return condition;
         }
