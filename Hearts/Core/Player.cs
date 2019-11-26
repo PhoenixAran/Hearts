@@ -61,7 +61,7 @@ namespace Hearts.Core
             return false;
         }
 
-        public void EmptyHandAndTricks()
+        public void Reset()
         {
             Hand.Clear();
             _cardsWon.Clear();
@@ -71,6 +71,8 @@ namespace Hearts.Core
                 TricksWon.RemoveAt( i );
                 Pool<Trick>.Free( trick );
             }
+            CanLeadHearts = false;
+            Points = 0;
         }
 
         public bool HasSuit( Suit suit )
@@ -83,11 +85,18 @@ namespace Hearts.Core
             return false;
         }
 
-        public void WinTrick( Trick trick )
+        public bool WinTrick( Trick trick )
         {
             TricksWon.Add( trick );
             _cardsWon.AddRange( trick.OrderedCards );
-            Points += trick.GetPenaltyPoints();
+            if(trick.GetPenaltyPoints() == 26)
+            {
+                return false;
+            } else
+            {
+                Points += trick.GetPenaltyPoints();
+                return true;
+            }
         }
 
         public abstract void PassCards( int roundNumber, Player otherPlayer );
@@ -106,6 +115,26 @@ namespace Hearts.Core
 
         }
 
+        public void OtherPlayerShootTheMoon()
+        {
+            Points += 26;
+        }
 
+        public bool HandIsAllHeartsAndQueenOfSpades()
+        {
+            foreach ( var card in Hand )
+            {
+                if ( card.Suit != Suit.Hearts )
+                {
+                    if ( card.CardRank == Card.QUEEN && card.Suit == Suit.Spades)
+                    {
+                        continue;
+                    }
+                    return false;
+                }
+                    
+            }
+            return true;
+        }
     }
 }
