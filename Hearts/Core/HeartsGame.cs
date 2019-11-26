@@ -78,16 +78,22 @@ namespace Hearts.Core
             {
                 var currentPlayer = Players[idx];
                 var playCard = currentPlayer.GetPlayCard( TurnNumber, trick );
-                currentPlayer.Hand.Remove( playCard );
 
-                //verify if this card is valid
-                if ( !this.ValidPlayCard( playCard, currentPlayer, trick ) )
+                int numBadPlays = 0;
+                while (!this.ValidPlayCard(playCard, currentPlayer, trick))
                 {
-                    throw new ArgumentException( $"Invalid card: {playCard} \nplayed for the trick: {trick}" );
+                    if(numBadPlays == 10)
+                    {
+                        throw new ArgumentException($"Invalid card: {playCard} \nplayed for the trick: {trick}\nMultiple attempts were made to play a card but none succeeded ");
+                    }
+
+                    playCard = currentPlayer.GetPlayCard(TurnNumber, trick);                    
                 }
 
+                currentPlayer.Hand.Remove( playCard );
+
                 //Player has voided the suit and can therefore play Hearts
-                if ( !CanLeadWithHearts && playCard.Suit == Suit.Hearts )
+                if ( !CanLeadWithHearts && (playCard.Suit == Suit.Hearts || (playCard.Suit == Suit.Spades && playCard.CardRank == Card.QUEEN)))
                 {
                     this.NotifyPlayersCanLeadHearts(true);
                 }
@@ -97,7 +103,16 @@ namespace Hearts.Core
 
             _leadPlayerIdx = Players.IndexOf( trick.GetWinner() );
             var winner = Players[_leadPlayerIdx];
-            winner.WinTrick( trick );
+            if(!winner.WinTrick( trick))
+            {
+                foreach(var player in Players)
+                {
+                    if(player != winner)
+                    {
+                        player.OtherPlayerShootTheMoon();
+                    }
+                }
+            }
             TurnNumber += 1;
         }
 
@@ -121,7 +136,7 @@ namespace Hearts.Core
             //increment round number
             RoundNumber++;
             //reset CanLeadWithHearts flat
-            NotifyPlayersCanLeadHearts( true );
+            NotifyPlayersCanLeadHearts( false );
         }
 
 
@@ -201,21 +216,23 @@ namespace Hearts.Core
 
         private bool ValidPlayCard(Card card, Player player, Trick trick)
         {
-            //Dylan plz fix this :3
+            //First turn has special rules, cannot play a hearts or Qspades. If the player only has the Qspades/hearts then they can play them
+            if(TurnNumber == 1){
+                if(card.Suit == Suit.Hearts || (card.Suit == Suit.Spades && card.CardRank == Card.QUEEN)){
+                    if(HasNoValidFirstTurnPlay(player.Hand)){
+                        return true;
+                    }                
+                }
+            }
+
+            //Check if the player can lead with hearts as the first play of the trick
             if ( trick.Count == 0 )
             {
-                if ( TurnNumber == 1 )
+                if ( card.Suit == Suit.Hearts || ( card.Suit == Suit.Spades && card.CardRank == Card.QUEEN ) )
                 {
-                    return ( card.Suit == Suit.Clubs && card.CardRank == 2 );
+                    return CanLeadWithHearts;
                 }
-                else
-                {
-                    if ( card.Suit == Suit.Hearts || ( card.Suit == Suit.Spades && card.CardRank == Card.QUEEN ) )
-                    {
-                        return CanLeadWithHearts;
-                    }
-                }
-
+                return true;
             }
 
             //If they match the suit its valid
@@ -250,6 +267,19 @@ namespace Hearts.Core
             {
                 player.NotifyNewRound();
             }
+        }
+
+        private bool HasNoValidFirstTurnPlay(List<Card> hand){
+            bool condition = true;
+
+            hand.ForEach(x => {
+                if(x.Suit == Suit.Clubs || x.Suit == Suit.Diamonds || 
+                   (x.Suit == Suit.Spades && x.CardRank != Card.QUEEN)){
+                    condition = false;
+                }
+            });
+
+            return condition;
         }
         #endregion
     }
