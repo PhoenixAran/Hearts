@@ -83,11 +83,18 @@ namespace Hearts.Core
             return false;
         }
 
-        public void WinTrick( Trick trick )
+        public bool WinTrick( Trick trick )
         {
             TricksWon.Add( trick );
             _cardsWon.AddRange( trick.OrderedCards );
-            Points += trick.GetPenaltyPoints();
+            if(trick.GetPenaltyPoints() == 26)
+            {
+                return false;
+            } else
+            {
+                Points += trick.GetPenaltyPoints();
+                return true;
+            }
         }
 
         public abstract void PassCards( int roundNumber, Player otherPlayer );
@@ -106,6 +113,9 @@ namespace Hearts.Core
 
         }
 
-
+        public void OtherPlayerShootTheMoon()
+        {
+            Points += 26;
+        }
     }
 }

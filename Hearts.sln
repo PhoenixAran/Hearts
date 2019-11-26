@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.29403.142
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hearts", "Hearts\Hearts.csproj", "{C628DD73-2BA2-4A3A-BC8B-DE4EC89B1991}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestProject", "TestProject\TestProject.csproj", "{E76E00F8-8F86-4F7B-B37D-77BB229A424D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestProject", "TestProject\TestProject.csproj", "{E76E00F8-8F86-4F7B-B37D-77BB229A424D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
