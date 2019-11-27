@@ -146,13 +146,23 @@ namespace Hearts.Core
 
             foreach ( var player in Players )
             {
-                if ( player.Points == POINT_LIMIT )
+                if ( player.Points >= POINT_LIMIT )
                 {
                     return true;
                 }
             }
 
             return false;
+        }
+
+        public Player GetWinner()
+        {
+            List<Player> pool = ListPool<Player>.Obtain();
+            pool.AddRange(Players);
+            pool.Sort((x, y) => x.Points - y.Points);
+            Player player = pool[0];
+            ListPool<Player>.Free(pool);
+            return player;
         }
         #endregion
 
