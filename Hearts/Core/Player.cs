@@ -115,6 +115,14 @@ namespace Hearts.Core
 
         }
 
+        /// <summary>
+        /// Method will be called on player if the two of clubs was automatically removed
+        /// </summary>
+        public virtual void NotifyInitialLeadCardRemoved()
+        {
+
+        }
+
         public void OtherPlayerShootTheMoon()
         {
             Points += 26;

@@ -67,10 +67,10 @@ namespace Hearts.Core
                 var card = leadPlayer.Hand.First( c => c.CardRank == 2 && c.Suit == Suit.Clubs );
                 leadPlayer.Hand.Remove( card );
                 _leadPlayerIdx = ( _leadPlayerIdx + 1 ) % 4;
-                limit = 3;
                 trick.AddCard( card, leadPlayer );
+                leadPlayer.NotifyInitialLeadCardRemoved();
                 //change limit to 3 since we got the first card from the intial lead player already
-        
+                limit = 3;
             }   
 
             for ( int i = 0, idx = _leadPlayerIdx; i < limit; ++i, idx = ( idx + 1 ) % 4 )
